@@ -33,7 +33,7 @@ def fetch(url, path):
         r = request.get(URL, headers=headers)
         r.raise_for_status()
         FILE.write_bytes(r.content)
-        print(f"Raw data saved to {FILE}"
+        print(f"Raw data saved to {FILE}")
 
 
 if __name__ == "__main__":
