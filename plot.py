@@ -2,7 +2,6 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "matplotlib",
-#   "pandas"
 # ]
 # ///
 import json
@@ -18,7 +17,6 @@ IN_FILE = DATA / "hk_rain_hourly.json"
 with open(IN_FILE, "r", encoding="utf-8") as f:
     raw = json.load(f)
 
-# 提取全港雨量数据
 rainfall_list = raw["rainfall"]
 time_labels = []
 rain_values = []
