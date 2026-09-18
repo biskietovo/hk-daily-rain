@@ -1,33 +1,39 @@
 # /// script
-# requires-python = ">=3.10"
-# dependencies = ["matplotlib"]
+# requires-python = ">=3.11"
+# dependencies = [
+#   "matplotlib",
+#   "pandas"
+# ]
 # ///
-
-from pathlib import Path
+import json
 import matplotlib.pyplot as plt
-import pandas as pd
+from pathlib import Path
 
 HERE = Path(__file__).parent
 DATA = HERE / "data"
-OUT = HERE / "out"
-OUT.mkdir(exist_ok=True)
+OUT_FOLDER = HERE / "out"
+OUT_FOLDER.mkdir(exist_ok=True)
+IN_FILE = DATA / "hk_rain_hourly.json"
 
-csv_path = DATA / "hko-daily-rain-2025.csv"
-df = pd.read_csv(csv_path)
+with open(IN_FILE, "r", encoding="utf-8") as f:
+    raw = json.load(f)
 
-df["date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
-df["rainfall"] = pd.to_numeric(df["Daily rainfall(mm)", errors="coerce"])
+# 提取全港雨量数据
+rainfall_list = raw["rainfall"]
+time_labels = []
+rain_values = []
+for entry in rainfall_list:
+    time_labels.append(entry["endTime"])
+    rain_values.append(entry["rainfall"])
 
-plt.figure(figsize=(14,5)
-           plt.bar(df["date"], df["rainfall"], color="#2a6f7f", width=1.0)
-           plt.title("Hong Kong Daily Rainfall in 2025 (HKO Observatory)")
-           plt.xlabel("Date")
-           plt.ylabel("Daily Rainfall (mm)")
-           plt.xticks(rotation=45, ha="right")
-           plt.tight_layout()
-           pkt.savefig(OUT / "plot.png", dpi=150)
-           plt.show()
+plt.figure(figsize=(12,5))
+plt.plot(time_labels, rain_values, color="#2374ab", linewidth=2)
+plt.title("Hong Kong Hourly Rainfall", fontsize=14)
+plt.xlabel("Time")
+plt.ylabel("Rainfall (mm)")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig(OUT_FOLDER / "hk_rain_plot.png")
+plt.close()
+print("Plot saved to out/hk_rain_plot.png")
 
-           print(f"Loaded {len(df)} records")
-           print(f"Max daily rainfall: {df['rainfall'].max():.2f} mm")
-           print("Saved out/plot.png")
