@@ -4,6 +4,7 @@
 #   "requests",
 # ]
 # ///
+print("=== Script starts running ===")
 import requests
 from pathlib import Path
 
@@ -16,7 +17,8 @@ URL = "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrr
 
 if not OUT_FILE.exists():
     print("Fetching HK hourly rainfall data...")
-    res = requests.get(URL, headers={"User-Agent": "week03-assignment"})
+    headers = {"User-Agent": "week03-data-visualisation-assignment"}
+    res = requests.get(URL, headers=headers)
     res.raise_for_status()
     OUT_FILE.write_text(res.text, encoding="utf-8")
     print(f"Saved raw data into {OUT_FILE}")
