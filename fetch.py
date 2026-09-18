@@ -1,29 +1,24 @@
 # /// script
-# requires-python = ">=3.10"
-# dependencies = ["requests"]
+# requires-python = ">=3.11"
+# dependencies = [
+#   "requests",
+# ]
 # ///
-
 import requests
-import json
 from pathlib import Path
 
 HERE = Path(__file__).parent
 DATA = HERE / "data"
 DATA.mkdir(exist_ok=True)
-FILE = DATA / "hk-hourly-rain.json"
+OUT_FILE = DATA / "hk_rain_hourly.json"
 
-# 香港天文台API，逐小时雨量
 URL = "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en"
 
-if not FILE.exists():
-    print("Fetching rainfall data...")
-    r = requests.get(URL, headers={"User-Agent": "pfad-assignment2"})
-    r.raise_for_status()
-    FILE.write_text(r.text, encoding="utf-8")
-    print(f"Saved raw data to {FILE}")
+if not OUT_FILE.exists():
+    print("Fetching HK hourly rainfall data...")
+    res = requests.get(URL, headers={"User-Agent": "week03-assignment"})
+    res.raise_for_status()
+    OUT_FILE.write_text(res.text, encoding="utf-8")
+    print(f"Saved raw data into {OUT_FILE}")
 else:
-    print("Raw file already exists, skip fetch")
-
-
-raw = json.loads(FILE.read_text(encoding="utf-8"))
-print(raw["rainfall"][0])
+    print("Raw file exists, skip fetch.")
