@@ -7,23 +7,23 @@ import requests
 import json
 from pathlib import Path
 
-data_dir = Path("data")
-data_dir.mkdir(exist_ok=True)
-out_file = data_dir / "hk_hour_rain.json"
+HERE = Path(__file__).parent
+DATA = HERE / "data"
+DATA.mkdir(exist_ok=True)
+FILE = DATA / "hk-hourly-rain.json"
 
-url = "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en"
-print("Start requesting HK Observatory API...")
-try:
-    resp = requests.get(url, timeout=10)
-    resp.raise_for_status()
-    print(f"Status code: {resp.status_code}")
-    raw = resp.json()
-    print("JSON data retrieved successfully")
+# 香港天文台API，逐小时雨量
+URL = "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en"
 
-    with open(out_file, "w", encoding="utf-8") as f:
-        json.dump(raw, f, indent=2)
+if not FILE.exists():
+    print("Fetching rainfall data...")
+    r = requests.get(URL, headers={"User-Agent": "pfad-assignment2"})
+    r.raise_for_status()
+    FILE.write_text(r.text, encoding="utf-8")
+    print(f"Saved raw data to {FILE}")
+else:
+    print("Raw file already exists, skip fetch")
 
-    print(f"Raw data saved to {out_file}")
 
-except Exception as e:
-    print(f"Error: {e}")
+raw = json.loads(FILE.read_text(encoding="utf-8"))
+print(raw["rainfall"][0])
