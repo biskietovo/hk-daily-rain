@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["matplotlib", "requests"]
+# dependencies = ["matplotlib"]
 # ///
 
 import json
@@ -31,4 +31,5 @@ plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 
 plt.savefig(OUT_FILE)
+plt.close()
 
