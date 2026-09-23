@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#   "requests",
+   "requests",
 # ]
 # ///
 print("=== Script starts running ===")
