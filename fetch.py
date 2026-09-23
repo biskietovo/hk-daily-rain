@@ -1,26 +1,20 @@
 # /// script
-# requires-python = ">=3.11"
-# dependencies = [
-   "requests",
-# ]
+# requires-python = ">=3.10"
+# dependencies = ["requests"]
 # ///
-print("=== Script starts running ===")
+
 import requests
+import json
 from pathlib import Path
 
-HERE = Path(__file__).parent
-DATA = HERE / "data"
+DATA = Path("data")
 DATA.mkdir(exist_ok=True)
 OUT_FILE = DATA / "hk_rain_hourly.json"
 
-URL = "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en"
+url = "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en"
+resp = requests.get(url)
+resp.raise_for_status()
+data = resp.json()
 
-if not OUT_FILE.exists():
-    print("Fetching HK hourly rainfall data...")
-    headers = {"User-Agent": "week03-data-visualisation-assignment"}
-    res = requests.get(URL, headers=headers)
-    res.raise_for_status()
-    OUT_FILE.write_text(res.text, encoding="utf-8")
-    print(f"Saved raw data into {OUT_FILE}")
-else:
-    print("Raw file exists, skip fetch.")
+with open(OUT_FILE, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=2)
