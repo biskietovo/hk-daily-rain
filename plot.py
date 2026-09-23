@@ -1,40 +1,36 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["matplotlib"]
+# dependencies = ["pandas", "matplotlib"]
 # ///
-import json
+# plot.py
+import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-DATA = Path("data")
-IN_FILE = DATA / "hk_rain_hourly.json"
-OUT_FILE = Path("out") / "weather_plot.png"
-Path("out").mkdir(exist_ok=True)
+def main():
+    data_path = Path("data/oslo_3day_forecast.csv")
+    df = pd.read_csv(data_path)
 
-with open(IN_FILE, "r", encoding="utf-8") as f:
-    raw = json.load(f)
+    # 时间转datetime
+    df["time"] = pd.to_datetime(df["time"])
 
-time_list = raw["hourly"]["time"]
-temp_list = raw["hourly"]["temperature_2m"]
+    # 绘图
+    plt.figure(figsize=(12, 5))
+    plt.plot(df["time"], df["temperature_2m"], color="#1f77b4", linewidth=2)
+    plt.title("Oslo 3-Day Hourly Temperature Forecast (metno_seamless)", fontsize=14)
+    plt.xlabel("Time")
+    plt.ylabel("2m Temperature (°C)")
+    plt.grid(alpha=0.3)
+    plt.xticks(rotation=30)
+    plt.tight_layout()
 
-lat = raw["latitude"]
-lon = raw["longitude"]
-used_model = raw.get("model", "Unknown Model")
-start_time = time_list[0]
-end_time = time_list[-1]
+    # 输出图片
+    out_dir = Path("out")
+    out_dir.mkdir(exist_ok=True)
+    plt.savefig(out_dir / "oslo_temperature.png", dpi=300)
+    plt.show()
+    print("图表已保存到 out/oslo_temperature.png")
 
-plt.figure(figsize=(16,6))
-plt.plot(time_list, temp_list, linewidth=2)
-
-auto_title = f"Weather Forecast | Lat:{lat:.2f}, Lon:{lon:.2f} | Model:{used_model} | Period: {start_time} ~ {end_time}"
-plt.title(auto_title, fontsize=12)
-
-plt.ylabel("Temperature 2m (°C)", fontsize=12)
-plt.xlabel("Datetime", fontsize=12)
-plt.xticks(time_list[::4], rotation=45, ha="right")
-plt.grid(alpha=0.3)
-plt.tight_layout()
-
-plt.savefig(OUT_FILE)
-plt.close()
+if __name__ == "__main__":
+    main()
 
