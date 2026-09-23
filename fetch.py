@@ -1,43 +1,24 @@
 # /// script
-# requires-python = ">=3.10"
-# dependencies = ["requests", "pandas"]
+# requires-python = ">=3.11"
+# dependencies = [
+#   "requests",
+# ]
 # ///
-# fetch.py
 import requests
-import pandas as pd
+import subprocess
 from pathlib import Path
 
-# 奥斯陆坐标，3天预报，metno_seamless模型
-URL = "https://api.open-meteo.com/v1/forecast"
-params = {
-    "latitude": 59.91,
-    "longitude": 10.75,
-    "hourly": "temperature_2m",
-    "models": "metno_seamless",
-    "forecast_days": 3
-}
+HERE = Path(__file__).parent
+DATA = HERE / "data"
+DATA.mkdir(exist_ok=True)
+OUT_FILE = DATA / "oslo_weather.json"
 
-def main():
-    # 创建data文件夹
-    data_dir = Path("data")
-    data_dir.mkdir(exist_ok=True)
+URL = "https://api.open-meteo.com/v1/forecast?latitude=59.91&longitude=10.75&hourly=temperature_2m&models=metno_seamless&forecast_days=3"
 
-    resp = requests.get(URL, params=params)
-    resp.raise_for_status()
-    data = resp.json()
+print("Fetching latest Oslo weather data...")
+res = requests.get(URL, headers={"User-Agent": "oslo-weather-forecast/1.0"})
+res.raise_for_status()
+OUT_FILE.write_text(res.text, encoding="utf-8")
+print(f"Saved raw data into {OUT_FILE}")
 
-    # 提取时间与温度
-    hourly_data = data["hourly"]
-    df = pd.DataFrame({
-        "time": hourly_data["time"],
-        "temperature_2m": hourly_data["temperature_2m"]
-    })
-
-    # 保存csv
-    out_path = data_dir / "oslo_3day_forecast.csv"
-    df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"数据已保存至 {out_path}")
-    print(df.head())
-
-if __name__ == "__main__":
-    main()
+subprocess.run(["uv", "run", "plot.py"], cwd=HERE, check=True)
