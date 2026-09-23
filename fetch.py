@@ -8,7 +8,7 @@ from pathlib import Path
 
 DATA = Path("data")
 DATA.mkdir(exist_ok=True)
-OUT_FILE = DATA / "weather_data.json"
+OUT_FILE = DATA / "hk_rain_hourly.json"
 
 url = "https://api.open-meteo.com/v1/forecast"
 params = {
