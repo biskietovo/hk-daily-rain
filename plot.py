@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 DATA = Path("data")
-IN_FILE = DATA / "weather_data.json"
+IN_FILE = DATA / "hk_rain_hourly.json"
 OUT_FILE = Path("out") / "weather_plot.png"
-
 Path("out").mkdir(exist_ok=True)
 
 with open(IN_FILE, "r", encoding="utf-8") as f:
@@ -27,7 +26,6 @@ end_time = time_list[-1]
 plt.figure(figsize=(16,6))
 plt.plot(time_list, temp_list, linewidth=2)
 
-# ✅自动拼接标题：坐标、模型、时间区间，完全跟着返回的数据走
 auto_title = f"Weather Forecast | Lat:{lat:.2f}, Lon:{lon:.2f} | Model:{used_model} | Period: {start_time} ~ {end_time}"
 plt.title(auto_title, fontsize=12)
 
