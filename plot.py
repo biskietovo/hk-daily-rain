@@ -1,35 +1,53 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pandas", "matplotlib"]
+# dependencies = ["matplotlib", "pandas"]
 # ///
-import pandas as pd
-import matplotlib.pyplot as plt
+
+import json
 from pathlib import Path
 
-def main():
-    data_path = Path("data/oslo_3day_forecast.csv")
-    df = pd.read_csv(data_path)
+import matplotlib.pyplot as plt
+import pandas as pd
 
-    # 时间转datetime
-    df["time"] = pd.to_datetime(df["time"])
+HERE = Path(__file__).parent
+DATA = HERE / "data"
+OUT = HERE / "out"
+OUT.mkdir(exist_ok=True)
 
-    # 绘图
-    plt.figure(figsize=(12, 5))
-    plt.plot(df["time"], df["temperature_2m"], color="#1f77b4", linewidth=2)
-    plt.title("Oslo 3-Day Hourly Temperature Forecast (metno_seamless)", fontsize=14)
-    plt.xlabel("Time")
-    plt.ylabel("2m Temperature (°C)")
-    plt.grid(alpha=0.3)
-    plt.xticks(rotation=30)
-    plt.tight_layout()
+json_path = DATA / "oslo_weather.json"
+if not json_path.exists():
+    raise FileNotFoundError(f"Missing Oslo weather data: {json_path}. Run 'python fetch.py' first.")
 
-    # 输出图片
-    out_dir = Path("out")
-    out_dir.mkdir(exist_ok=True)
-    plt.savefig(out_dir / "oslo_temperature.png", dpi=300)
-    plt.show()
-    print("图表已保存到 out/oslo_temperature.png")
+with json_path.open("r", encoding="utf-8") as fh:
+    payload = json.load(fh)
 
-if __name__ == "__main__":
-    main()
+hourly = payload.get("hourly", {})
+times = hourly.get("time", [])
+temperatures = hourly.get("temperature_2m", [])
+if not times or not temperatures:
+    raise ValueError(f"No forecast records found in {json_path}.")
 
+records = []
+for time, value in zip(times, temperatures):
+    if value is None:
+        continue
+    records.append({"time": pd.to_datetime(time), "temperature": float(value)})
+
+if not records:
+    raise ValueError(f"Forecast records are present but contain no valid temperatures in {json_path}.")
+
+df = pd.DataFrame(records)
+
+plt.figure(figsize=(14, 8))
+plt.plot(df["time"], df["temperature"], marker="o", color="#2a6f7f")
+plt.title("Oslo 3-Day Hourly Air Temperature Forecast")
+plt.xlabel("Time (UTC)")
+plt.ylabel("Temperature (deg C)")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.savefig(OUT / "oslo_temperature.png", dpi=150)
+plt.close()
+
+print(f"Loaded {len(df)} hourly forecast records")
+print(f"Temperature range: {df['temperature'].min():.1f} to {df['temperature'].max():.1f} deg C")
+print("Saved out/oslo_temperature.png")
