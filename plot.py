@@ -1,42 +1,34 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["requests", "pandas"]
+# dependencies = ["pandas", "matplotlib"]
 # ///
-import requests
 import pandas as pd
+import matplotlib.pyplot as plt
 from pathlib import Path
 
-# 奥斯陆坐标，3天预报，metno_seamless模型
-URL = "https://api.open-meteo.com/v1/forecast"
-params = {
-    "latitude": 59.91,
-    "longitude": 10.75,
-    "hourly": "temperature_2m",
-    "models": "metno_seamless",
-    "forecast_days": 3
-}
-
 def main():
-    # 创建data文件夹
-    data_dir = Path("data")
-    data_dir.mkdir(exist_ok=True)
+    data_path = Path("data/oslo_3day_forecast.csv")
+    df = pd.read_csv(data_path)
 
-    resp = requests.get(URL, params=params)
-    resp.raise_for_status()
-    data = resp.json()
+    # 时间转datetime
+    df["time"] = pd.to_datetime(df["time"])
 
-    # 提取时间与温度
-    hourly_data = data["hourly"]
-    df = pd.DataFrame({
-        "time": hourly_data["time"],
-        "temperature_2m": hourly_data["temperature_2m"]
-    })
+    # 绘图
+    plt.figure(figsize=(12, 5))
+    plt.plot(df["time"], df["temperature_2m"], color="#1f77b4", linewidth=2)
+    plt.title("Oslo 3-Day Hourly Temperature Forecast (metno_seamless)", fontsize=14)
+    plt.xlabel("Time")
+    plt.ylabel("2m Temperature (°C)")
+    plt.grid(alpha=0.3)
+    plt.xticks(rotation=30)
+    plt.tight_layout()
 
-    # 保存csv
-    out_path = data_dir / "oslo_3day_forecast.csv"
-    df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"数据已保存至 {out_path}")
-    print(df.head())
+    # 输出图片
+    out_dir = Path("out")
+    out_dir.mkdir(exist_ok=True)
+    plt.savefig(out_dir / "oslo_temperature.png", dpi=300)
+    plt.show()
+    print("图表已保存到 out/oslo_temperature.png")
 
 if __name__ == "__main__":
     main()
