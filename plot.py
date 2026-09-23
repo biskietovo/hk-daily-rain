@@ -33,3 +33,5 @@ plt.tight_layout()
 plt.savefig(OUT_FILE)
 plt.close()
 
+plt.close()
+
