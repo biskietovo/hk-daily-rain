@@ -9,7 +9,7 @@ is what you had to correct: did it invent a column name, use pandas where a list
 would do, silently drop the rows it could not parse? -->
 
 ## Tools
-I kept the uv script header required by the course. This makes the whole script fully reproducible. At first I planned to collect more types of data, but I finally kept only one set of temperature data for this task.
+I used the tools and workflow template from the course repository. I wrote Python scripts, and used uv to manage dependencies. I also used the provided GitHub Actions pages workflow file to automatically build and publish the webpage every time I push my code.
 
 ## Kept
 I kept the uv script header required by the course. This makes the whole script fully reproducible. At first I planned to collect more types of data, but I finally kept only one set of temperature data for this task.
