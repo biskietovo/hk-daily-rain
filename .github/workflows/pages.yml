@@ -27,8 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - name: Run the script that writes site/index.html
-        run: uv run currents_web.py            # CHANGE ME to your script
+      - name: Build the page
+        run: uv run plot.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

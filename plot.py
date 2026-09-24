@@ -13,6 +13,8 @@ HERE = Path(__file__).parent
 DATA = HERE / "data"
 OUT = HERE / "out"
 OUT.mkdir(exist_ok=True)
+SITE = HERE / "site"
+SITE.mkdir(exist_ok=True)
 
 json_path = DATA / "oslo_weather.json"
 if not json_path.exists():
@@ -46,8 +48,27 @@ plt.ylabel("Temperature (deg C)")
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 plt.savefig(OUT / "oslo_temperature.png", dpi=150)
+plt.savefig(SITE / "oslo_temperature.png", dpi=150)
 plt.close()
+
+(SITE / "index.html").write_text(
+        """<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Oslo Weather Forecast</title>
+</head>
+<body>
+    <h1>Oslo 3-Day Hourly Air Temperature Forecast</h1>
+    <img src="oslo_temperature.png" alt="Oslo hourly temperature forecast">
+</body>
+</html>
+""",
+        encoding="utf-8",
+)
 
 print(f"Loaded {len(df)} hourly forecast records")
 print(f"Temperature range: {df['temperature'].min():.1f} to {df['temperature'].max():.1f} deg C")
 print("Saved out/oslo_temperature.png")
+print("Saved site/index.html")
