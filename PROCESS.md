@@ -9,7 +9,7 @@ is what you had to correct: did it invent a column name, use pandas where a list
 would do, silently drop the rows it could not parse? -->
 
 ## Tools
-I used the tools and workflow template from the course repository. I wrote Python scripts, and used uv to manage dependencies. I also used the provided GitHub Actions pages workflow file to automatically build and publish the webpage every time I push my code.
+I built my project using the tools and workflow template provided in the course repository. I wrote Python scripts with assistance from AI tools inside VS Code. I used the workflow file from the teacher’s repository to automatically build and publish the webpage. I also used ChatGPT to translate my notes from Chinese into English for the README and Process files.
 
 ## Kept
 I kept the uv script header required by the course. This makes the whole script fully reproducible. At first I planned to collect more types of data, but I finally kept only one set of temperature data for this task.
